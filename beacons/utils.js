@@ -16,3 +16,21 @@ function updateDropdown(target, list, child) {
 
   if (innerHTMLStr != "") target.__controllers[child].domElement.innerHTML = innerHTMLStr;
 }
+
+function shiftPlane(plane, new_pos, axis) {
+  let old_pos = plane.userData.pos;
+  // Shift based on distance between current location and new location
+  switch (axis) {
+    case 0: // U
+      plane.translateX(new_pos - old_pos);
+      break;
+    case 1: // Y
+      plane.translateY(new_pos - old_pos);
+      break;
+    case 2: // Z
+      plane.translateZ(new_pos - old_pos);
+      break;
+  }
+  // Update current location in user data
+  plane.userData.pos = new_pos;
+}

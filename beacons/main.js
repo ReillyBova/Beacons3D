@@ -9,7 +9,10 @@ function init() {
   RENDERER = new THREE.WebGLRenderer( { antialias: true } );
 	RENDERER.setPixelRatio( window.devicePixelRatio );
 	RENDERER.setSize( window.innerWidth, window.innerHeight );
-  document.body.appendChild( RENDERER.domElement );
+	RENDERER.toneMapping = THREE.ReinhardToneMapping;
+	container = document.createElement( 'div' );
+	document.body.appendChild( container );
+	container.appendChild( RENDERER.domElement );
 
   // Initialize raycaster for mouse intersections
   MOUSE = new THREE.Vector2();
@@ -28,11 +31,13 @@ function init() {
 	CONTROLS.minAzimuthAngle = 0;
 	CONTROLS.maxAzimuthAngle = Math.PI / 2.0;
 	CONTROLS.maxDistance = FAR / 2.0;
+	CONTROLS.zoomSpeed = 0.5;
+	CONTROLS.mouseButtons.LEFT = THREE.MOUSE.RIGHT;
   CONTROLS.update();
 
   // Initialize framerate statistics
   STATS = new Stats();
-  document.body.appendChild( STATS.dom );
+  container.appendChild( STATS.dom );
 
   // Initialize background
 	SCENE.background = new THREE.Color( 0x0 );
@@ -40,17 +45,33 @@ function init() {
   const backgroundGeometry = new THREE.IcosahedronBufferGeometry( FAR / 2.0, 5 );
   const backgroundWireframe = new THREE.WireframeGeometry( backgroundGeometry );
   const backgroundMaterial = new THREE.LineBasicMaterial( { color: 0x555555, linewidth: 2, depthTest: true,
-                                                          opacity: 0.25, transparent: true } );
+                                                          opacity: 0.1, transparent: true } );
   const backgroundLines = new THREE.LineSegments( backgroundWireframe, backgroundMaterial );
   // Add background geometry into scene
   SCENE.add( backgroundLines );
 
   // Initialize event listeners
-	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+	container.addEventListener( 'mousemove', onDocumentMouseMove, false );
+	container.addEventListener( 'mousedown', onDocumentMouseDown, false );
+	container.addEventListener("keydown", onDocumentKeyDown, false);
 	window.addEventListener( 'resize', onWindowResize, false );
 
-	// Initialize GUI
+	// Initialize params
 	INPUT = new UserInterface();
+
+	// Create Bloom
+	let renderedScene = new THREE.RenderPass( SCENE, CAMERA );
+	BLOOMPASS = new THREE.UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+	BLOOMPASS.renderToScreen = true;
+	BLOOMPASS.threshold = INPUT.bloomThreshold;
+	BLOOMPASS.strength = INPUT.bloomStrength;
+	BLOOMPASS.radius = INPUT.bloomRadius;
+	COMPOSER = new THREE.EffectComposer( RENDERER );
+	COMPOSER.setSize( window.innerWidth, window.innerHeight );
+	COMPOSER.addPass( renderedScene );
+	COMPOSER.addPass( BLOOMPASS );
+
+	// Initialize GUI
 	GUI = new dat.GUI();
 	initGui();
 
@@ -75,12 +96,13 @@ function run() {
 }
 
 function raycast() {
-	// Find intersections with axes
+	// Find intersections with planes
 	RAYCASTER.setFromCamera( MOUSE, CAMERA );
-	/*var intersects = raycaster.intersectObjects( parentTransform.children, true );*/
+	let intersects = RAYCASTER.intersectObjects( PLANES );
+	selectionHover(intersects);
 }
 
 function render() {
   CONTROLS.update();
-	RENDERER.render( SCENE, CAMERA );
+	COMPOSER.render( SCENE, CAMERA );
 }

@@ -5,7 +5,7 @@ function initGame() {
   // Initialize scale
   setScale(DEFAULT_SCALE);
   // Initialize selection
-  SELECTION = new THREE.Vector3();
+  initSelection();
 }
 
 function initGrid() {
@@ -22,7 +22,7 @@ function initGrid() {
                 		map: new THREE.TextureLoader().load( 'textures/disc.png' ),
                 		alphaTest: 0.25,
                     color: 0x888888,
-                		morphTargets: true
+                		morphTargets: true,
                 	} );
     geometry.setDrawRange( 0, 0 );
     AXES.push(new THREE.Points( geometry, material ));
@@ -39,19 +39,70 @@ function initGrid() {
   // Init Planes
   let plane_geometry = new THREE.PlaneBufferGeometry( FAR, FAR );
   plane_geometry.rotateY( Math.PI / 2 );
-  X_PLANE = new THREE.Mesh( plane_geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
+  X_PLANE = new THREE.Mesh( plane_geometry, new THREE.MeshBasicMaterial( { visible: false, color: 0xff0000} ) );
+  X_PLANE.name = "x_plane";
+  X_PLANE.userData.pos = 0; // For translation bookkeeping
 
   plane_geometry = new THREE.PlaneBufferGeometry( FAR, FAR );
   plane_geometry.rotateX( - Math.PI / 2 );
-  Y_PLANE = new THREE.Mesh( plane_geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
+  Y_PLANE = new THREE.Mesh( plane_geometry, new THREE.MeshBasicMaterial( { visible: false, color: 0x00ff00 } ) );
+  Y_PLANE.name = "y_plane";
+  Y_PLANE.userData.pos = 0; // For translation bookkeeping
 
   plane_geometry = new THREE.PlaneBufferGeometry( FAR, FAR );
-  Z_PLANE = new THREE.Mesh( plane_geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
+  Z_PLANE = new THREE.Mesh( plane_geometry, new THREE.MeshBasicMaterial( { visible: false, color: 0x0000ff } ) );
+  Z_PLANE.name = "z_plane";
+  Z_PLANE.userData.pos = 0; // For translation bookkeeping
 
   SCENE.add( X_PLANE );
   SCENE.add( Y_PLANE );
   SCENE.add( Z_PLANE );
-  PLANES = [X_PLANE, Y_PLANE, Z_PLANE]
+  PLANES = [X_PLANE, Y_PLANE, Z_PLANE];
+}
+
+function initSelection() {
+  SELECTION = new THREE.Vector3();
+  let geometry = new THREE.SphereBufferGeometry(2, 32, 24);
+	let r_material = new THREE.MeshBasicMaterial({ color: 0xff0000});
+  let g_material = new THREE.MeshBasicMaterial({ color: 0x00ff00});
+  let b_material = new THREE.MeshBasicMaterial({ color: 0x0000ff});
+
+  X_SELECT_NODE = new THREE.Mesh( geometry, r_material );
+  Y_SELECT_NODE = new THREE.Mesh( geometry, g_material );
+  Z_SELECT_NODE = new THREE.Mesh( geometry, b_material );
+
+  X_SELECT_NODE.visible = false;
+  Y_SELECT_NODE.visible = false;
+  Z_SELECT_NODE.visible = false;
+
+  SCENE.add(X_SELECT_NODE);
+  SCENE.add(Y_SELECT_NODE);
+  SCENE.add(Z_SELECT_NODE);
+
+  // Line guides
+  r_material = new THREE.LineBasicMaterial({ color: 0xff0000 });
+  g_material = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+  b_material = new THREE.LineBasicMaterial({ color: 0x0000ff });
+
+  let x_geometry = new THREE.Geometry();
+  let y_geometry = new THREE.Geometry();
+  let z_geometry = new THREE.Geometry();
+
+  x_geometry.vertices.push(new THREE.Vector3( -FAR, 0, 0 ), new THREE.Vector3( FAR, 0, 0 ));
+	y_geometry.vertices.push(new THREE.Vector3( 0, -FAR, 0 ), new THREE.Vector3( 0, FAR, 0 ));
+  z_geometry.vertices.push(new THREE.Vector3( 0, 0, -FAR ), new THREE.Vector3( 0, 0, FAR ));
+
+  X_SELECT_GUIDE = new THREE.Line( x_geometry, r_material );
+  Y_SELECT_GUIDE = new THREE.Line( y_geometry, g_material );
+  Z_SELECT_GUIDE = new THREE.Line( z_geometry, b_material );
+
+  //X_SELECT_GUIDE.visible = false;
+  //Y_SELECT_GUIDE.visible = false;
+  //Z_SELECT_GUIDE.visible = false;
+
+  SCENE.add(X_SELECT_GUIDE);
+  SCENE.add(Y_SELECT_GUIDE);
+  SCENE.add(Z_SELECT_GUIDE);
 }
 
 function setScale( scale_string ) {
