@@ -23,10 +23,52 @@ function onDocumentMouseDown( event ) {
 }
 
 function onDocumentKeyDown( event ) {
+	// Prevent capture of the GUI
+	if (document.activeElement != document.body) {
+		return;
+	}
 
 	let key = event.key;
 	if (key == " ") {
 		// Reset selection
+		selectionReset();
+	} else if (key == "x") {
+		if (SELECTED[0]) {
+			SELECTED[0] = false;
+			SELECTED_COUNT -= 1;
+			shiftPlane(X_PLANE, 0, 0);
+		} else {
+			SELECTED[0] = true;
+			SELECTED_COUNT += 1;
+			shiftPlane(X_PLANE, SELECTION.x, 0);
+		}
+	} else if (key == "y") {
+		if (SELECTED[1]) {
+			SELECTED[1] = false;
+			SELECTED_COUNT -= 1;
+			shiftPlane(Y_PLANE, 0, 0);
+		} else {
+			SELECTED[1] = true;
+			SELECTED_COUNT += 1;
+			shiftPlane(Y_PLANE, SELECTION.y, 1);
+		}
+	} else if (key == "z") {
+		if (SELECTED[2]) {
+			SELECTED[2] = false;
+			SELECTED_COUNT -= 1;
+			shiftPlane(Z_PLANE, 0, 0);
+		} else {
+			SELECTED[2] = true;
+			SELECTED_COUNT += 1;
+			shiftPlane(Z_PLANE, SELECTION.z, 2);
+		}
+	} else if (key == "Enter") {
+		if (CURRENT_BEACON === null) {
+			return;
+		}
+		BEACONS.push(CURRENT_BEACON);
+		CURRENT_BEACON.start();
+		CURRENT_BEACON = null;
 		selectionReset();
 	} else {
 		// We did nothing, so let the browser handle the keypress
@@ -125,6 +167,10 @@ function selectionHover(intersects) {
 			X_SELECT_GUIDE.geometry.verticesNeedUpdate = true;
 			Y_SELECT_GUIDE.geometry.verticesNeedUpdate = true;
 			Z_SELECT_GUIDE.geometry.verticesNeedUpdate = true;
+		} else {
+			X_SELECT_GUIDE.visible = false;
+			Y_SELECT_GUIDE.visible = false;
+			Z_SELECT_GUIDE.visible = false;
 		}
   } else {
     if (!SELECTED[0]) X_SELECT_NODE.visible = false;

@@ -17,9 +17,12 @@ var X_SELECT_NODE, Y_SELECT_NODE, Z_SELECT_NODE;
 const DEFAULT_SCALE = '0 4 5 8 11';
 const SCALE_SIZE = 12;
 const MIDI_MAX = 128;
+const FREQUENCY = 500;
 
 // Game Globals
-var INPUT, SELECTION;
+var INPUT, SELECTION, MIDI;
+var CURRENT_BEACON;
+var BEACONS = [];
 var SCALE = [];
 var SCALE_HISTORY = [];
 var NOTES = [];

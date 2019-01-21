@@ -11,6 +11,7 @@ function init() {
 	RENDERER.setSize( window.innerWidth, window.innerHeight );
 	RENDERER.toneMapping = THREE.ReinhardToneMapping;
 	container = document.createElement( 'div' );
+	container.setAttribute("tabindex", 0);
 	document.body.appendChild( container );
 	container.appendChild( RENDERER.domElement );
 
@@ -53,7 +54,7 @@ function init() {
   // Initialize event listeners
 	container.addEventListener( 'mousemove', onDocumentMouseMove, false );
 	container.addEventListener( 'mousedown', onDocumentMouseDown, false );
-	container.addEventListener("keydown", onDocumentKeyDown, false);
+	document.addEventListener("keydown", onDocumentKeyDown, false);
 	window.addEventListener( 'resize', onWindowResize, false );
 
 	// Initialize params
@@ -78,6 +79,9 @@ function init() {
 	// Initialize Game
 	initGame();
 
+	// Initialize MIDI
+	initMIDI();
+
   // Start game loop
   run();
 }
@@ -89,6 +93,9 @@ function run() {
 
 	// Handle selection intersections
 	raycast();
+
+	// Handle beacon behavior
+	beacons();
 
 	// Update screen
 	render();

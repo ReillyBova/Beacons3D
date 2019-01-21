@@ -105,7 +105,19 @@ function initSelection() {
   SCENE.add(Z_SELECT_GUIDE);
 }
 
-function setScale( scale_string ) {
+/*function changeNote(direction) {
+  let possibleChanges = []
+  let temp = [pc for pc in SCALE]
+  for i in temp:
+    for j in direction:
+      if (i + j) % 12 not in temp:
+        possibleChanges.append([i, j])
+  alteration = random.choice(possibleChanges)
+  i = temp.index(alteration[0])
+  self.parsimoniousScale[i] += alteration[1]
+  self.display_scale(sorted([x % 12 for x in self.parsimoniousScale]))*/
+
+function setScale(scale_string) {
   // Convert scale to list
   const temp_arr = scale_string.split(" ").map(Number);
   let scale_arr = [];
@@ -184,4 +196,23 @@ function buildNotes() {
   Z_AXIS.geometry.setDrawRange( 0, noteCount );
   Z_AXIS.geometry.computeBoundingSphere();
   Z_AXIS.geometry.attributes.position.needsUpdate = true;
+}
+
+function beacons() {
+  // Check if we need a ghost beacon
+  if (SELECTED_COUNT >= 2 && CURRENT_BEACON === null) {
+    CURRENT_BEACON = new Beacon();
+  } else if (SELECTED_COUNT < 2 && CURRENT_BEACON !== null) {
+    SCENE.remove(CURRENT_BEACON);
+    CURRENT_BEACON = null;
+  }
+
+  if (CURRENT_BEACON !== null) {
+    CURRENT_BEACON.position.copy(SELECTION);
+  }
+
+  // Update beacons
+  //for (let i = 0; i < BEACONS.length; i++) {
+//    BEACONS[i].updateState();
+//  }
 }
