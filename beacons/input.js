@@ -77,6 +77,12 @@ function onDocumentKeyDown( event ) {
 		// Kill the first beacon
 		popped_beacon = BEACONS.shift();
 		popped_beacon.kill();
+	} else if (key == "K") {
+		// Kill all
+		while (BEACONS.length > 0) {
+			popped_beacon = BEACONS.shift();
+			popped_beacon.kill();
+		}
 	} else {
 		// We did nothing, so let the browser handle the keypress
 		return;
