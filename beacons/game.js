@@ -160,13 +160,18 @@ function modulate() {
   // Update GUI history
   updateDropdown(GUI, SCALE_HISTORY, 1);
   INPUT.scale = scale_string;
-  INPUT.scale_history = SCALE_HISTORY;
+  INPUT.scale_history = scale_string;
 
   // Enact the scale change into the game
   buildNotes();
 }
 
 function setScale(scale_string) {
+  // Check to see if we should actually switch
+  if (scale_string === SCALE_HISTORY[0]) {
+    return;
+  }
+
   const temp_arr = scale_string.split(" ").map(Number);
   let scale_arr = [];
   for (let i = 0; i < temp_arr.length; i++) {
@@ -186,7 +191,7 @@ function setScale(scale_string) {
   // Update GUI history
   updateDropdown(GUI, SCALE_HISTORY, 1);
   INPUT.scale = scale_string;
-  INPUT.scale_history = SCALE_HISTORY;
+  INPUT.scale_history = scale_string;
 
   // Enact the scale change into the game
   buildNotes();

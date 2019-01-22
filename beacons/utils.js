@@ -7,14 +7,14 @@ function pitch_to_pitchClass( pitch ) {
 // Dynamically add dropdown options to gui
 // From: https://stackoverflow.com/questions/18260307/dat-gui-update-the-dropdown-list-values-for-a-controller
 function updateDropdown(target, list, child) {
-  innerHTMLStr = "<select>";
+  innerHTMLStr = "";
   for (let i = 0; i < list.length; i++) {
     let str = "<option value='" + list[i] + "'>" + list[i] + "</option>";
     innerHTMLStr += str;
   }
-  innerHTMLStr += "</select>";
+  innerHTMLStr += "";
 
-  if (innerHTMLStr != "") target.__controllers[child].domElement.innerHTML = innerHTMLStr;
+  if (innerHTMLStr != "") target.__controllers[child].domElement.firstChild.innerHTML = innerHTMLStr;
 }
 
 function shiftPlane(plane, new_pos, axis) {

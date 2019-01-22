@@ -19,8 +19,8 @@ var UserInterface = function() {
 function initGui() {
   // Register callbacks
   let controller;
-  controller = GUI.add(INPUT, 'scale').onFinishChange(setScale);
-  controller = GUI.add(INPUT, 'scale_history', SCALE_HISTORY).onFinishChange(setScale);
+  controller = GUI.add(INPUT, 'scale').listen().onFinishChange(setScale);
+  controller = GUI.add(INPUT, 'scale_history', SCALE_HISTORY).listen().onFinishChange(setScale);
   controller = GUI.add(INPUT, 'min_note', 0, MIDI_MAX).listen().onChange(onMinNoteChange).step(1);
   controller = GUI.add(INPUT, 'max_note', 0, MIDI_MAX).listen().onChange(onMaxNoteChange).step(1);
   controller = GUI.add(INPUT, 'movement').onFinishChange(setMovement);
