@@ -234,6 +234,15 @@ function selectionClick(intersects) {
 			shiftPlane(Z_PLANE, SELECTION.z, 2);
 		}
   } else {
+		// Corner case
+		if (CURRENT_BEACON === null) {
+			return;
+		}
+
+		// Create beacon
+		BEACONS.push(CURRENT_BEACON);
+		CURRENT_BEACON.start();
+		CURRENT_BEACON = null;
     // Unselect
 		selectionReset();
   }
