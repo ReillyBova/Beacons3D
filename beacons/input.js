@@ -70,6 +70,13 @@ function onDocumentKeyDown( event ) {
 		CURRENT_BEACON.start();
 		CURRENT_BEACON = null;
 		selectionReset();
+	} else if (key == "k") {
+		if (BEACONS.length == 0) {
+			return;
+		}
+		// Kill the first beacon
+		popped_beacon = BEACONS.shift();
+		popped_beacon.kill();
 	} else {
 		// We did nothing, so let the browser handle the keypress
 		return;

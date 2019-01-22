@@ -14,14 +14,24 @@ Beacon.prototype.constructor = Beacon;
 Beacon.prototype.getMesh = function() {
     return this.mesh;
 }
+
 Beacon.prototype.start = function() {
   this.lastUpdate = Date.now();
   this.state = -1;
+  this.die = false;
   this.visible = false;
   this.updateLoop();
 }
+
 Beacon.prototype.updateLoop = function() {
-  setTimeout(this.updateLoop.bind(this), FREQUENCY);
+  if (this.die) {
+    this.geometry.dispose();
+		this.material.dispose();
+    SCENE.remove(this);
+    return;
+  } else {
+    setTimeout(this.updateLoop.bind(this), FREQUENCY);
+  }
 
   if (this.visible) {
     this.visible = false;
@@ -49,4 +59,8 @@ Beacon.prototype.playNote = function() {
   let note = NOTES[index];
   MIDI.noteOn(0, note, 50, 0);
   MIDI.noteOff(0, note, FREQUENCY*4);
+}
+
+Beacon.prototype.kill = function() {
+  this.die = true;
 }
