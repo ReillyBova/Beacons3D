@@ -24,6 +24,7 @@ var INPUT, SELECTION, MIDI;
 var CURRENT_BEACON;
 var BEACONS = [];
 var SCALE = [];
+var MOVEMENT = [-1, 1];
 var SCALE_HISTORY = [];
 var NOTES = [];
 var MIN_NOTE = 36;

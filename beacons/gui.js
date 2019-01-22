@@ -3,6 +3,10 @@ var UserInterface = function() {
   this.scale_history = DEFAULT_SCALE;
   this.min_note = MIN_NOTE;
   this.max_note = MAX_NOTE;
+  this.movement = "-1 1";
+  this.modulate = function() {
+    modulate();
+  };
   this.reset_camera = function() {
     CAMERA.position.set(...DEFAULT_CAMERA_POS);
   };
@@ -19,6 +23,9 @@ function initGui() {
   controller = GUI.add(INPUT, 'scale_history', SCALE_HISTORY).onFinishChange(setScale);
   controller = GUI.add(INPUT, 'min_note', 0, MIDI_MAX).listen().onChange(onMinNoteChange).step(1);
   controller = GUI.add(INPUT, 'max_note', 0, MIDI_MAX).listen().onChange(onMaxNoteChange).step(1);
+  controller = GUI.add(INPUT, 'movement').onFinishChange(setMovement);
+  controller = GUI.add(INPUT, 'modulate');
+
   let f2 = GUI.addFolder('Graphics');
   controller = f2.add(INPUT, 'reset_camera');
   controller = f2.add(INPUT, 'exposure', 0.1, 2).onChange(onExposureChange);

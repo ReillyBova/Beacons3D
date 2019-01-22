@@ -105,20 +105,68 @@ function initSelection() {
   SCENE.add(Z_SELECT_GUIDE);
 }
 
-/*function changeNote(direction) {
-  let possibleChanges = []
-  let temp = [pc for pc in SCALE]
-  for i in temp:
-    for j in direction:
-      if (i + j) % 12 not in temp:
-        possibleChanges.append([i, j])
-  alteration = random.choice(possibleChanges)
-  i = temp.index(alteration[0])
-  self.parsimoniousScale[i] += alteration[1]
-  self.display_scale(sorted([x % 12 for x in self.parsimoniousScale]))*/
+function setMovement(movement_scale) {
+  // Convert scale to list
+  const temp_arr = movement_scale.split(" ").map(Number);
+  for (let i = 0; i < temp_arr.length; i++) {
+    // Filter out bad numbers
+    if (isNaN(temp_arr[i])) {
+      continue;
+    }
+
+    // Modulo to fit in octave space (and also work for negative numbers)
+    MOVEMENT.push(temp_arr[i]);
+  }
+}
+
+function modulate() {
+  // Convert scale to membership list
+  let pitchClasses_in_scale = [];
+  for (let i = 0; i < SCALE_SIZE; i++) {
+    pitchClasses_in_scale.push(false);
+  }
+  let newScale = [];
+  for (let i = 0; i < SCALE.length; i++) {
+    newScale.push(SCALE[i]);
+    pitchClasses_in_scale[SCALE[i]] = true;
+  }
+  let possibleChanges = [];
+  for (let i = 0; i < newScale.length; i++) {
+    for (let j = 0; j < MOVEMENT.length; j++) {
+      let pc = pitch_to_pitchClass(newScale[i] + MOVEMENT[j]);
+      if (!pitchClasses_in_scale[pc]) {
+        possibleChanges.push([i, pc]);
+      }
+    }
+  }
+
+  if (possibleChanges.length === 0) {
+    return;
+  }
+
+  alteration = possibleChanges[Math.floor(Math.random() * possibleChanges.length)];
+  SCALE = newScale;
+  SCALE[alteration[0]] = alteration[1];
+  SCALE.sort(function(a,b){return a - b});
+
+  // Update globals and add to history
+  scale_string = "";
+  for (let i = 0; i < SCALE.length; i++) {
+    scale_string += SCALE[i].toString();
+    scale_string += " ";
+  }
+  SCALE_HISTORY.unshift(scale_string);
+
+  // Update GUI history
+  updateDropdown(GUI, SCALE_HISTORY, 1);
+  INPUT.scale = scale_string;
+  INPUT.scale_history = SCALE_HISTORY;
+
+  // Enact the scale change into the game
+  buildNotes();
+}
 
 function setScale(scale_string) {
-  // Convert scale to list
   const temp_arr = scale_string.split(" ").map(Number);
   let scale_arr = [];
   for (let i = 0; i < temp_arr.length; i++) {
@@ -132,7 +180,6 @@ function setScale(scale_string) {
   }
 
   // Update globals and add to history
-  old_scale = SCALE;
   SCALE = scale_arr;
   SCALE_HISTORY.unshift(scale_string);
 
@@ -147,7 +194,7 @@ function setScale(scale_string) {
 
 function buildNotes() {
   // Generate new notes
-  pitchClasses_in_scale = []
+  let pitchClasses_in_scale = [];
   for (let i = 0; i < SCALE_SIZE; i++) {
     pitchClasses_in_scale.push(false);
   }
